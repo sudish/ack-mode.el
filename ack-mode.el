@@ -14,7 +14,9 @@
 
 (defvar ack-mode-directory-function
   (defun sj/project-root-dir ()
-    (cdar (project-root-fetch))))
+    (let ((root-dir (project-root-fetch)))
+      (when root-dir
+	(cdar root-dir)))))
 
 (defun ack (string)
   (interactive "sSearch For: ")
