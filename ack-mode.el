@@ -18,28 +18,37 @@
       (when root-dir
 	(cdar root-dir)))))
 
-(defun ack (string)
-  (interactive "sSearch For: ")
-  (let ((pwd (or (and (functionp ack-mode-directory-function)
-		      (funcall ack-mode-directory-function))
-		 default-directory)))
-    (ack-start-ack-process pwd)))
+(define-derived-mode ack-mode special-mode "Ack"
+  "Major mode for ack search results."
+  ;; End of last fully processed line
+  (set (make-local-variable 'ack-last-processed-mark) (point-min-marker))
+  (set (make-local-variable 'ack-in-group-p) nil)
+  (set (make-local-variable 'ack-current-group-file-name) nil)
+  (set (make-local-variable 'ack-current-group-start-marker) (make-marker)))
 
-(defun ack-start-ack-process (dir)
-  (let ((buf (generate-new-buffer "*ack*")))
+(defun ack (search-string)
+  (interactive "sSearch For: ")
+  (let* ((pwd (or (and (functionp ack-mode-directory-function)
+		       (funcall ack-mode-directory-function))
+		  default-directory))
+	 (buf (ack-start-ack-process search-string pwd)))
+    (switch-to-buffer-other-window buf)))
+
+(defun ack-start-ack-process (search-string dir)
+  (let ((buf (generate-new-buffer (format "*ack \"%s\"*" search-string))))
     (save-current-buffer
       (set-buffer buf)
+      (ack-mode)
       (setq default-directory dir)
-      (setq ack-processed-mark (point-min-marker))
       (let ((proc (apply 'start-process (buffer-name buf) buf 
-			 ack-program-name (append ack-arguments (list string)))))
+			 ack-program-name (append ack-arguments (list search-string)))))
 	(set-process-filter proc 'ack-process-filter)))
     buf))
 
 (defun ack-process-filter (proc string)
-  (let ((buf (process-buffer proc)))
+  (let ((buf (process-buffer proc))
+	(inhibit-read-only t))
     (when (buffer-live-p buf)
-      (display-buffer buf)
       (with-current-buffer buf
 	(save-excursion
 	  (goto-char (process-mark proc))
