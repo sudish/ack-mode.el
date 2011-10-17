@@ -1,10 +1,16 @@
 ;;; ack-mode ---    [sj--11/10/16]
 
-(defvar ack-program "ack")
-(defvar ack-arguments '("--color" "--nopager" "--group"))
+(defvar ack-program-name "ack")
 
-(defvar ack-processed-mark nil)
-(make-variable-buffer-local 'ack-processed-mark)
+(defvar ack-color-filename "bold green")
+(defvar ack-color-match "bold red")
+(defvar ack-color-lineno "bold yellow")
+
+(defvar ack-arguments `("--nopager" "--group" "--color"
+			,(concat "--color-filename=" ack-color-filename)
+			,(concat "--color-match=" ack-color-match)
+			,(concat "--color-lineno=" ack-color-lineno)
+			))
 
 (defvar ack-mode-directory-function
   (defun sj/project-root-dir ()
@@ -24,8 +30,9 @@
       (setq default-directory dir)
       (setq ack-processed-mark (point-min-marker))
       (let ((proc (apply 'start-process (buffer-name buf) buf 
-			 ack-program (append ack-arguments (list string)))))
-	(set-process-filter proc 'ack-process-filter)))))
+			 ack-program-name (append ack-arguments (list string)))))
+	(set-process-filter proc 'ack-process-filter)))
+    buf))
 
 (defun ack-process-filter (proc string)
   (let ((buf (process-buffer proc)))
