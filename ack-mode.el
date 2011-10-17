@@ -1,5 +1,7 @@
 ;;; ack-mode ---    [sj--11/10/16]
 
+(require 'ansi-color)
+
 (defvar ack-program-name "ack")
 
 (defvar ack-color-filename "bold green")
@@ -17,6 +19,11 @@
     (let ((root-dir (project-root-fetch)))
       (when root-dir
 	(cdar root-dir)))))
+
+(defvar ack-last-processed-mark)
+(defvar ack-in-group-p)
+(defvar ack-current-group-file-name)
+(defvar ack-current-group-start-marker)
 
 (define-derived-mode ack-mode special-mode "Ack"
   "Major mode for ack search results."
@@ -40,7 +47,7 @@
       (set-buffer buf)
       (ack-mode)
       (setq default-directory dir)
-      (let ((proc (apply 'start-process (buffer-name buf) buf 
+      (let ((proc (apply 'start-process (buffer-name buf) buf
 			 ack-program-name (append ack-arguments (list search-string)))))
 	(set-process-filter proc 'ack-process-filter)))
     buf))
