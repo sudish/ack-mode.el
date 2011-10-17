@@ -56,10 +56,31 @@
 	  (set-marker (process-mark proc) (point))
 	  (ack-process-new-input))))))
 
+(defsubst ack-last-line-in-buffer-p ()
+  (save-excursion
+    ;; we're on the last line if
+    ;; - we can't move forward a line
+    ;; - moving forward leaves us at the end of the buffer
+    (or (/= 0 (forward-line))
+	(eobp))))
+
 (defun ack-process-new-input ()
-  (goto-char ack-processed-mark)
-  (while (= 0 (forward-line 100)) t)
-  (beginning-of-line)
-  (unless (equal ack-processed-mark (point))
-    (ansi-color-apply-on-region ack-processed-mark (point))
-    (move-marker ack-processed-mark (point))))
+  (goto-char ack-last-processed-mark)
+  (while (not (ack-last-line-in-buffer-p))
+    (cond ((looking-at-p "^$")
+	   (setq ack-in-group-p nil)
+	   (when ack-current-group-file-name
+	     (put-text-property ack-current-group-start-marker (point)
+				'ack-file-name
+				(expand-file-name ack-current-group-file-name default-directory))
+	     (setq ack-current-group-file-name nil)))
+	  ((and (not ack-in-group-p)
+		(looking-at "^\\([^[:blank:]]+\\)$"))
+	   (setq ack-in-group-p t)
+	   (setq ack-current-group-file-name
+		 (ansi-color-filter-apply (substring-no-properties (match-string 1))))
+	   (set-marker ack-current-group-start-marker (point-marker))))
+    (forward-line))
+  (unless (equal ack-last-processed-mark (point))
+    (ansi-color-apply-on-region ack-last-processed-mark (point))
+    (set-marker ack-last-processed-mark (point-marker))))
