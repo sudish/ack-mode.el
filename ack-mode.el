@@ -119,20 +119,14 @@
 		 (save-match-data
 		   (beginning-of-line)
 		   (when (looking-at "^\\([[:digit:]]+\\):")
-		     (string-to-number (match-string 1))))))
-	 (col (max 0 (- (current-column)
-			(save-excursion
-			  (beginning-of-line)
-			  (skip-chars-forward "0-9:")
-			  (point))))))
+		     (string-to-number (match-string 1)))))))
     (cond ((bufferp buf)
-	   (ack-display-buffer buf line col))
+	   (ack-display-buffer buf line))
 	  ((and file (file-readable-p file))
-	   (ack-display-buffer (find-file-noselect file) line col))
+	   (ack-display-buffer (find-file-noselect file) line))
 	  (error "Couldn't show file %s" file))))
 
-(defun ack-display-buffer (buf line col)
-  (message "visiting %s %s %s" buf line col)
+(defun ack-display-buffer (buf line)
   (when (bufferp buf)
     (save-selected-window
       (select-window
@@ -140,6 +134,4 @@
       (with-current-buffer buf
 	(goto-char (point-min))
 	(forward-line (1- line))
-	(beginning-of-line)
-	(forward-char col)
 	(recenter nil)))))
