@@ -72,7 +72,8 @@
       (setq default-directory dir)
       (let ((proc (apply 'start-process (buffer-name buf) buf
 			 ack-program-name (append ack-arguments (list search-string)))))
-	(set-process-filter proc 'ack-process-filter)))
+	(set-process-filter   proc 'ack-process-filter)
+	(set-process-sentinel proc 'ack-process-sentinel)))
     buf))
 
 (defun ack-process-filter (proc string)
@@ -85,6 +86,17 @@
 	  (insert string)
 	  (set-marker (process-mark proc) (point))
 	  (ack-process-new-input))))))
+
+(defun ack-process-sentinel (proc event)
+  (unless (process-live-p proc)
+    (let ((buf (process-buffer proc))
+	  (inhibit-read-only t))
+      (when (buffer-live-p buf)
+	(with-current-buffer buf
+	  (save-excursion
+	    (goto-char (point-max))
+	    (insert "\n")
+	    (ack-process-new-input)))))))
 
 (defsubst ack-last-line-in-buffer-p ()
   (save-excursion
