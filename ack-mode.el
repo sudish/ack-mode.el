@@ -1,4 +1,23 @@
-;;; ack-mode ---    [sj--11/10/16]
+;;; ack-mode --- run ack and display the results in a browsable buffer
+
+;; Copyright (C) 2011 Sudish Joseph <sudish@gmail.com>
+
+;; Licensed under the same terms as GNU Emacs.
+
+;; Keywords: ack grep search
+;; Created: 16 Oct 2011
+;; Author: Sudish Joseph <sudish@gmail.com>
+;; Version: 1
+
+;; This file is NOT part of GNU Emacs.
+
+;;; Commentary:
+
+;; This mode exists to run ack and similar recursive file search
+;; tools, displaying the results in a browsable buffer.  The results
+;; of the search are grouped by file with individual lines prefixed
+;; only by the line number, making it easier to sift through the
+;; results.
 
 (require 'ansi-color)
 
