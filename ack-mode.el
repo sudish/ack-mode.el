@@ -142,7 +142,7 @@
 	   (ack-display-buffer buf line))
 	  ((and file (file-readable-p file))
 	   (ack-display-buffer (find-file-noselect file) line))
-	  (t (error "Couldn't show file %s" file)))))
+	  (t (when file (error "Couldn't show file %s" file))))))
 
 (defun ack-display-buffer (buf line)
   (when (bufferp buf)
