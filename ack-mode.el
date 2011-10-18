@@ -39,6 +39,8 @@
       (when root-dir
 	(cdar root-dir)))))
 
+(defvar ack-mode-file-regexp "^\\([^:[:blank:]]+\\)$")
+
 (defvar ack-last-processed-mark)
 (defvar ack-in-group-p)
 (defvar ack-current-group-file-name)
@@ -117,7 +119,7 @@
 				(expand-file-name ack-current-group-file-name default-directory))
 	     (setq ack-current-group-file-name nil)))
 	  ((and (not ack-in-group-p)
-		(looking-at "^\\([^[:blank:]]+\\)$"))
+		(looking-at ack-mode-file-regexp))
 	   (setq ack-in-group-p t)
 	   (setq ack-current-group-file-name
 		 (ansi-color-filter-apply (substring-no-properties (match-string 1))))
