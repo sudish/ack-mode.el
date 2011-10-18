@@ -155,17 +155,18 @@
 	(recenter nil)))))
 
 (defun ack-skip-property-changes (prop direction times)
-  (let ((skip-func (cond ((eq direction 'forward) 'next-single-property-change)
-			 (t 'previous-single-property-change)))
-	(position (point)))
+  (let* ((forward-p (eq direction 'forward))
+	 (skip-func (if forward-p
+			'next-single-property-change
+		      'previous-single-property-change))
+	 (position (point)))
     (while (and position (>= times 0))
       (goto-char position)
       (setq position (funcall skip-func position prop))
       (setq times (1- times)))
     (unless position
       (goto-char
-       (cond ((eq direction 'forward) (point-max))
-	     (t                       (point-min)))))))
+       (if forward-p (point-max) (point-min))))))
 
 (defun ack-next-file ()
   (interactive)
