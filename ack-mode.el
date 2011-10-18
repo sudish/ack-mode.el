@@ -52,6 +52,10 @@
   (set (make-local-variable 'ack-current-group-file-name) nil)
   (set (make-local-variable 'ack-current-group-start-marker) (make-marker)))
 
+(define-key ack-mode-map [return] 'ack-visit-result)
+(define-key ack-mode-map [left]   'ack-previous-file)
+(define-key ack-mode-map [right]  'ack-next-file)
+
 (defun ack (search-string)
   (interactive "sSearch For: ")
   (let* ((pwd (or (and (functionp ack-mode-directory-function)
