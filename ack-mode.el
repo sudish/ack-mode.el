@@ -168,18 +168,22 @@
       (goto-char
        (if forward-p (point-max) (point-min))))))
 
+(defun ack-find-file-group (which)
+  (let* ((forward-p (eq which 'next))
+	 (search-func (if forward-p 're-search-forward 're-search-backward))
+	 (old-point (point)))
+    (save-excursion      
+      (when (looking-at ack-mode-file-regexp)
+	(forward-line (if forward-p nil -1)))
+      (cond ((funcall search-func ack-mode-file-regexp nil t)
+	     (beginning-of-line)
+	     (point))
+	    (t old-point)))))
+
 (defun ack-next-file ()
   (interactive)
-  (cond ((get-text-property (point) 'ack-file-name)
-	 (ack-skip-property-changes 'ack-file-name 'forward 2))
-	(t
-	 (ack-skip-property-changes 'ack-file-name 'forward 1)))
-  (beginning-of-line))
+  (goto-char (ack-find-file-group 'next)))
 
 (defun ack-previous-file ()
   (interactive)
-  (cond ((get-text-property (point) 'ack-file-name)
-	 (ack-skip-property-changes 'ack-file-name 'backward 3))
-	(t
-	 (ack-skip-property-changes 'ack-file-name 'backward 2)))
-  (forward-line))
+  (goto-char (ack-find-file-group 'previous)))
