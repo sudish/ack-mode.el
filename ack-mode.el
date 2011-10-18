@@ -110,3 +110,36 @@
   (unless (equal ack-last-processed-mark (point))
     (ansi-color-apply-on-region ack-last-processed-mark (point))
     (set-marker ack-last-processed-mark (point-marker))))
+
+(defun ack-visit-result ()
+  (interactive)
+  (let* ((file (get-text-property (point) 'ack-file-name))
+	 (buf (and file (get-file-buffer file)))
+	 (line (save-excursion
+		 (save-match-data
+		   (beginning-of-line)
+		   (when (looking-at "^\\([[:digit:]]+\\):")
+		     (string-to-number (match-string 1))))))
+	 (col (max 0 (- (current-column)
+			(save-excursion
+			  (beginning-of-line)
+			  (skip-chars-forward "0-9:")
+			  (point))))))
+    (cond ((bufferp buf)
+	   (ack-display-buffer buf line col))
+	  ((and file (file-readable-p file))
+	   (ack-display-buffer (find-file-noselect file) line col))
+	  (error "Couldn't show file %s" file))))
+
+(defun ack-display-buffer (buf line col)
+  (message "visiting %s %s %s" buf line col)
+  (when (bufferp buf)
+    (save-selected-window
+      (select-window
+       (display-buffer-use-some-window buf '((inhibit-same-window . t))))
+      (with-current-buffer buf
+	(goto-char (point-min))
+	(forward-line (1- line))
+	(beginning-of-line)
+	(forward-char col)
+	(recenter nil)))))
