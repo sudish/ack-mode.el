@@ -135,3 +135,32 @@
 	(goto-char (point-min))
 	(forward-line (1- line))
 	(recenter nil)))))
+
+(defun ack-skip-property-changes (prop direction times)
+  (let ((skip-func (cond ((eq direction 'forward) 'next-single-property-change)
+			 (t 'previous-single-property-change)))
+	(position (point)))
+    (while (and position (>= times 0))
+      (goto-char position)
+      (setq position (funcall skip-func position prop))
+      (setq times (1- times)))
+    (unless position
+      (goto-char
+       (cond ((eq direction 'forward) (point-max))
+	     (t                       (point-min)))))))
+
+(defun ack-next-file ()
+  (interactive)
+  (cond ((get-text-property (point) 'ack-file-name)
+	 (ack-skip-property-changes 'ack-file-name 'forward 2))
+	(t
+	 (ack-skip-property-changes 'ack-file-name 'forward 1)))
+  (beginning-of-line))
+
+(defun ack-previous-file ()
+  (interactive)
+  (cond ((get-text-property (point) 'ack-file-name)
+	 (ack-skip-property-changes 'ack-file-name 'backward 3))
+	(t
+	 (ack-skip-property-changes 'ack-file-name 'backward 2)))
+  (forward-line))
