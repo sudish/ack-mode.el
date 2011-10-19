@@ -49,7 +49,7 @@
 
 (define-derived-mode ack-mode special-mode "Ack"
   "Major mode for ack search results."
-  ;; End of last fully processed line
+  ;; State tracking async input chunks
   (set (make-local-variable 'ack-last-processed-mark) (point-min-marker))
   (set (make-local-variable 'ack-in-group-p) nil)
   (set (make-local-variable 'ack-current-group-file-name) nil)
@@ -177,7 +177,7 @@
   (let* ((forward-p (eq which 'next))
 	 (search-func (if forward-p 're-search-forward 're-search-backward))
 	 (old-point (point)))
-    (save-excursion      
+    (save-excursion
       (when (looking-at ack-mode-file-regexp)
 	(forward-line (if forward-p nil -1)))
       (cond ((funcall search-func ack-mode-file-regexp nil t)
