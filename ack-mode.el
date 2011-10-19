@@ -19,7 +19,6 @@
 ;; only by the line number, making it easier to sift through the
 ;; results.
 
-(require 'ansi-color)
 
 (defvar ack-program-name "ack")
 
@@ -27,11 +26,7 @@
 (defvar ack-color-match "bold red")
 (defvar ack-color-lineno "bold yellow")
 
-(defvar ack-arguments `("--nopager" "--group" "--color"
-			,(concat "--color-filename=" ack-color-filename)
-			,(concat "--color-match=" ack-color-match)
-			,(concat "--color-lineno=" ack-color-lineno)
-			))
+(defvar ack-arguments `("--group" "--nopager" "--nocolor"))
 
 (defvar ack-mode-directory-function
   (defun sj/project-root-dir ()
@@ -121,13 +116,10 @@
 	  ((and (not ack-in-group-p)
 		(looking-at ack-mode-file-regexp))
 	   (setq ack-in-group-p t)
-	   (setq ack-current-group-file-name
-		 (ansi-color-filter-apply (substring-no-properties (match-string 1))))
+	   (setq ack-current-group-file-name (substring-no-properties (match-string 1)))
 	   (set-marker ack-current-group-start-marker (point-marker))))
     (forward-line))
-  (unless (equal ack-last-processed-mark (point))
-    (ansi-color-apply-on-region ack-last-processed-mark (point))
-    (set-marker ack-last-processed-mark (point-marker))))
+  (set-marker ack-last-processed-mark (point-marker)))
 
 (defun ack-visit-result ()
   (interactive)
