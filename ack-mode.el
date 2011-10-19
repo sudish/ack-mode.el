@@ -35,7 +35,13 @@
 	(cdar root-dir)))))
 
 (defvar ack-mode-file-regexp "^\\([^:[:blank:]]+\\)$")
+(defvar ack-mode-line-regexp "^\\([[:digit:]]+\\):")
 
+(defvar ack-font-lock-keywords `((,ack-mode-file-regexp . (0 font-lock-keyword-face t))
+				 (,ack-mode-line-regexp . font-lock-variable-name-face)))
+
+;; The buffer-locals in an ack-mode buffer
+(defvar ack-local-font-lock-keywords)
 (defvar ack-last-processed-mark)
 (defvar ack-in-group-p)
 (defvar ack-current-group-file-name)
@@ -67,6 +73,13 @@
       (set-buffer buf)
       (ack-mode)
       (setq default-directory dir)
+
+      (set (make-local-variable 'ack-local-font-lock-keywords)
+	   (cons `(,search-string . font-lock-string-face)
+		 ack-font-lock-keywords))
+      (setq font-lock-defaults '(ack-local-font-lock-keywords t t))
+      (font-lock-mode 1)
+
       (let ((proc (apply 'start-process (buffer-name buf) buf
 			 ack-program-name (append ack-arguments (list search-string)))))
 	(set-process-filter   proc 'ack-process-filter)
@@ -128,7 +141,7 @@
 	 (line (save-excursion
 		 (save-match-data
 		   (beginning-of-line)
-		   (when (looking-at "^\\([[:digit:]]+\\):")
+		   (when (looking-at ack-mode-line-regexp)
 		     (string-to-number (match-string 1)))))))
     (cond ((bufferp buf)
 	   (ack-display-buffer buf line))
