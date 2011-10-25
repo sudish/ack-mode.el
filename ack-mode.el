@@ -60,7 +60,7 @@
 (define-key ack-mode-map [right]  'ack-next-file)
 
 (defun ack (search-string)
-  (interactive "sSearch For: ")
+  (interactive (list (grep-read-regexp)))
   (let* ((pwd (or (and (functionp ack-mode-directory-function)
 		       (funcall ack-mode-directory-function))
 		  default-directory))
