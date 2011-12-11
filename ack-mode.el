@@ -55,9 +55,9 @@
   (set (make-local-variable 'ack-current-group-file-name) nil)
   (set (make-local-variable 'ack-current-group-start-marker) (make-marker)))
 
-(define-key ack-mode-map [return] 'ack-visit-result)
-(define-key ack-mode-map [left]   'ack-previous-file)
-(define-key ack-mode-map [right]  'ack-next-file)
+(define-key ack-mode-map [return]      'ack-visit-result)
+(define-key ack-mode-map [(shift tab)] 'ack-previous-file)
+(define-key ack-mode-map [tab]         'ack-next-file)
 
 (defun ack (search-string)
   (interactive (list (grep-read-regexp)))
