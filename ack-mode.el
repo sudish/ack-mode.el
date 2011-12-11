@@ -136,7 +136,7 @@
 
 (defun ack-visit-result ()
   (interactive)
-  (let* ((file (get-text-property (point) 'ack-file-name))
+  (let* ((file (car (ack-find-file-group 'current)))
 	 (buf (and file (get-file-buffer file)))
 	 (line (save-excursion
 		 (save-match-data
@@ -156,7 +156,7 @@
        (display-buffer-use-some-window buf '((inhibit-same-window . t))))
       (with-current-buffer buf
 	(goto-char (point-min))
-	(forward-line (1- line))
+	(forward-line (1- (or line 0)))
 	(recenter nil)))))
 
 (defun ack-skip-property-changes (prop direction times)
@@ -174,6 +174,11 @@
        (if forward-p (point-max) (point-min))))))
 
 (defun ack-find-file-group (which)
+  "Returns (PATH . LOCATION) for the file group specified by `which'.
+`which' may be 'next, 'current. Any other value is treated as 'previous.
+
+PATH is the path to the file.  LOCATION is the character location in the
+buffer where the file group begins."
   (let* ((forward-p (eq which 'next))
 	 (search-func (if forward-p 're-search-forward 're-search-backward))
 	 (old-point (point)))
@@ -182,13 +187,17 @@
 	(forward-line (if forward-p nil -1)))
       (cond ((funcall search-func ack-mode-file-regexp nil t)
 	     (beginning-of-line)
-	     (point))
-	    (t old-point)))))
+	     (cons (substring-no-properties (match-string 1)) (point)))
+	    (t (cons nil old-point))))))
 
 (defun ack-next-file ()
   (interactive)
-  (goto-char (ack-find-file-group 'next)))
+  (let ((location (cdr (ack-find-file-group 'next))))
+    (when location
+      (goto-char location))))
 
 (defun ack-previous-file ()
   (interactive)
-  (goto-char (ack-find-file-group 'previous)))
+  (let ((location (cdr (ack-find-file-group 'previous))))
+    (when location
+      (goto-char location))))
