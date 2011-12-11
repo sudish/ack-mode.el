@@ -28,7 +28,7 @@
 
 (defvar ack-arguments `("--group" "--nopager" "--nocolor"))
 
-(defvar ack-mode-directory-function
+(defvar ack-root-directory-function
   (defun sj/project-root-dir ()
     (let ((root-dir (project-root-fetch)))
       (when root-dir
@@ -61,8 +61,8 @@
 
 (defun ack (search-string)
   (interactive (list (grep-read-regexp)))
-  (let* ((pwd (or (and (functionp ack-mode-directory-function)
-		       (funcall ack-mode-directory-function))
+  (let* ((pwd (or (and (functionp ack-root-directory-function)
+		       (funcall ack-root-directory-function))
 		  default-directory))
 	 (buf (ack-start-ack-process search-string pwd)))
     (switch-to-buffer-other-window buf)))
