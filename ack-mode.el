@@ -47,6 +47,8 @@
 (defvar ack-current-group-file-name)
 (defvar ack-current-group-start-marker)
 
+(defvar ack-use-text-properties nil)
+
 (define-derived-mode ack-mode special-mode "Ack"
   "Major mode for ack search results."
   ;; State tracking async input chunks
@@ -95,7 +97,8 @@
 	  (goto-char (process-mark proc))
 	  (insert string)
 	  (set-marker (process-mark proc) (point))
-	  (ack-process-new-input))))))
+	  (when ack-use-text-properties
+	    (ack-process-new-input)))))))
 
 (defun ack-process-sentinel (proc event)
   (unless (process-live-p proc)
@@ -106,7 +109,8 @@
 	  (save-excursion
 	    (goto-char (point-max))
 	    (insert "\n")
-	    (ack-process-new-input)))))))
+	    (when ack-use-text-properties
+	      (ack-process-new-input))))))))
 
 (defsubst ack-last-line-in-buffer-p ()
   (save-excursion
