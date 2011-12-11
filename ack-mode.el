@@ -34,7 +34,7 @@
       (when root-dir
 	(cdar root-dir)))))
 
-(defvar ack-mode-file-regexp "^\\([^:[:blank:]]+\\)$")
+(defvar ack-mode-file-regexp "^\\([^:[:blank:]][^:[:blank:]]+\\)$")
 (defvar ack-mode-line-regexp "^\\([[:digit:]]+\\):")
 
 (defvar ack-font-lock-keywords `((,ack-mode-file-regexp . (0 font-lock-keyword-face t))
