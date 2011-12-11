@@ -159,20 +159,6 @@
 	(forward-line (1- (or line 0)))
 	(recenter nil)))))
 
-(defun ack-skip-property-changes (prop direction times)
-  (let* ((forward-p (eq direction 'forward))
-	 (skip-func (if forward-p
-			'next-single-property-change
-		      'previous-single-property-change))
-	 (position (point)))
-    (while (and position (>= times 0))
-      (goto-char position)
-      (setq position (funcall skip-func position prop))
-      (setq times (1- times)))
-    (unless position
-      (goto-char
-       (if forward-p (point-max) (point-min))))))
-
 (defun ack-find-file-group (which)
   "Returns (PATH . LOCATION) for the file group specified by `which'.
 `which' may be 'next, 'current. Any other value is treated as 'previous.
