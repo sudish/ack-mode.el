@@ -43,7 +43,7 @@
     (when root-dir
       (cdar root-dir))))
 
-(defcustom ack-root-directory-function #'default-directory
+(defcustom ack-root-directory-function 'ack-default-directory
   "Function returning the directory to start the search in.
 
 Useful in conjunction with a project root package - use this to
@@ -98,6 +98,12 @@ have ack begin its search at the root of your project."
 		  default-directory))
 	 (buf (ack-start-ack-process search-string pwd)))
     (switch-to-buffer-other-window buf)))
+
+(defun ack-default-directory ()
+  "Returns default (current) directory of the current buffer.
+
+Useful as value for `ack-root-directory-function'."
+  default-directory)
 
 (defun ack-start-ack-process (search-string dir)
   (let ((buf (generate-new-buffer (format "*ack \"%s\"*" search-string))))
