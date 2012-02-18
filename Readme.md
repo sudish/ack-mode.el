@@ -3,5 +3,4 @@ ack-mode.el
 
 Emacs mode for browsing a source tree using [ack](http://betterthangrep.com/)'s output.
 
-Not much to see here yet.
-
+![Screenshot 1](/sudish/ack-mode.el/wiki/example-1.png)
