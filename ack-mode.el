@@ -13,29 +13,58 @@
 
 ;;; Commentary:
 
-;; This mode exists to run ack and similar recursive file search
-;; tools, displaying the results in a browsable buffer.  The results
-;; of the search are grouped by file with individual lines prefixed
-;; only by the line number, making it easier to sift through the
-;; results.
+;; This mode provides a browsable buffer for the results from ack, the
+;; recursive search tool.  The results of the search are grouped by
+;; file with individual lines prefixed only by the line number, making
+;; it easy to sift through the results.
 
 
-(defvar ack-program-name "ack")
+;; Customizable values
+(defgroup ack-mode nil
+  "A mode for browsing ack recursive file search results."
+  :link '(url-link :tag "ack" "http://betterthangrep.com/")
+  :package-version "1"
+  :group 'ack-mode)
 
-(defvar ack-color-filename "bold green")
-(defvar ack-color-match "bold red")
-(defvar ack-color-lineno "bold yellow")
+(defcustom ack-program-name "ack"
+  "The name of the ack binary."
+  :type '(string)
+  :require 'ack-mode
+  :group 'ack-mode)
 
-(defvar ack-arguments `("--group" "--nopager" "--nocolor"))
+(defcustom ack-arguments '("--group" "--nopager" "--nocolor")
+  "Arguments for ack, used on each search."
+  :type '(repeat string)
+  :require 'ack-mode
+  :group 'ack-mode)
 
-(defvar ack-root-directory-function
-  (defun sj/project-root-dir ()
-    (let ((root-dir (project-root-fetch)))
-      (when root-dir
-	(cdar root-dir)))))
+(defun sj/project-root-dir ()
+  (let ((root-dir (project-root-fetch)))
+    (when root-dir
+      (cdar root-dir))))
 
-(defvar ack-mode-file-regexp "^\\([^:[:blank:]][^:[:blank:]]+\\)$")
-(defvar ack-mode-line-regexp "^\\([[:digit:]]+\\):")
+(defcustom ack-root-directory-function #'default-directory
+  "Function returning the directory to start the search in.
+
+Useful in conjunction with a project root package - use this to
+have ack begin its search at the root of your project."
+  :type '(function)
+  :require 'ack-mode
+  :group 'ack-mode)
+
+;; shouldn't need to tweak these, but have at
+(defcustom ack-mode-file-regexp "^\\([^:[:blank:]][^:[:blank:]]+\\)$"
+  "Regular expression matching the first line of a file results block."
+  :type '(regexp)
+  :require 'ack-mode
+  :group 'ack-mode)
+
+(defcustom ack-mode-line-regexp "^\\([[:digit:]]+\\):"
+  "Regular expression matching a results line."
+  :type '(regexp)
+  :require 'ack-mode
+  :group 'ack-mode)
+
 
 (defvar ack-font-lock-keywords `((,ack-mode-file-regexp . (0 font-lock-keyword-face t))
 				 (,ack-mode-line-regexp . font-lock-variable-name-face)))
