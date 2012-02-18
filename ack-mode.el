@@ -61,6 +61,7 @@
 (define-key ack-mode-map [(shift tab)] 'ack-previous-file)
 (define-key ack-mode-map [tab]         'ack-next-file)
 
+;;;###autoload
 (defun ack (search-string)
   (interactive (list (grep-read-regexp)))
   (let* ((pwd (or (and (functionp ack-root-directory-function)
