@@ -1,6 +1,6 @@
 ;;; ack-mode --- run ack and display the results in a browsable buffer
 
-;; Copyright (C) 2011 Sudish Joseph <sudish@gmail.com>
+;; Copyright (C) 2011-2012 Sudish Joseph <sudish@gmail.com>
 
 ;; Licensed under the same terms as GNU Emacs.
 
