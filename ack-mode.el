@@ -92,6 +92,7 @@ have ack begin its search at the root of your project."
 
 ;;;###autoload
 (defun ack (search-string)
+  "Runs `ack-program-name' and displays the result in a browsable buffer."
   (interactive (list (grep-read-regexp)))
   (let* ((pwd (or (and (functionp ack-root-directory-function)
 		       (funcall ack-root-directory-function))
@@ -175,6 +176,9 @@ Useful as value for `ack-root-directory-function'."
   (set-marker ack-last-processed-mark (point-marker)))
 
 (defun ack-visit-result ()
+  "Visit file and line displayed on current line in search results buffer.
+
+The file is visited in a separate window with the current line centered."
   (interactive)
   (let* ((file (car (ack-find-file-group 'current)))
 	 (buf (and file (get-file-buffer file)))
@@ -190,6 +194,7 @@ Useful as value for `ack-root-directory-function'."
 	  (t (when file (error "Couldn't show file %s" file))))))
 
 (defun ack-display-buffer (buf line)
+  "Display line number `line' of buffer `buf' in some visible window."
   (when (bufferp buf)
     (save-selected-window
       (select-window
@@ -217,12 +222,14 @@ buffer where the file group begins."
 	    (t (cons nil old-point))))))
 
 (defun ack-next-file ()
+  "Go to the next file in the search results buffer."
   (interactive)
   (let ((location (cdr (ack-find-file-group 'next))))
     (when location
       (goto-char location))))
 
 (defun ack-previous-file ()
+  "Go to the last file in the search results buffer."
   (interactive)
   (let ((location (cdr (ack-find-file-group 'previous))))
     (when location
