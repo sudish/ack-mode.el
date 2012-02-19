@@ -111,9 +111,6 @@ Useful as value for `ack-root-directory-function'."
     (save-current-buffer
       (set-buffer buf)
       (ack-mode)
-      ;; directory local variables won't work in ack-mode buffers
-      ;; since they don't visit any files.  we explicitly load them
-      ;; before changing directory.
       (hack-dir-local-variables-non-file-buffer)
       (setq default-directory dir)
 
