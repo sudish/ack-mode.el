@@ -17,6 +17,12 @@
 ;; recursive search tool.  The results of the search are grouped by
 ;; file with individual lines prefixed only by the line number, making
 ;; it easy to sift through the results.
+;;
+;; To use, bind `ack-mode' to a key of your choice.
+;;
+;; You can move between file blocks in results buffers using `TAB' and
+;; `shift-TAB'.  `RETURN' visits the file and line mentioned on the
+;; line the cursor is currently on.
 
 
 ;; Customizable values
