@@ -211,6 +211,7 @@ The file is visited in a separate window with the current line centered."
       (with-current-buffer buf
 	(goto-char (point-min))
 	(forward-line (1- (or line 0)))
+	(ack-temporarily-highlight-line)
 	(recenter nil)))))
 
 (defun ack-find-file-group (which)
@@ -249,3 +250,20 @@ buffer where the file group begins."
   (let* ((shortened (replace-regexp-in-string dir ".../" default-directory))
 	 (header (format "root: %s, pwd: %s, %%s" dir shortened)))
     `(:propertize ,header face ,ack-header-line-face)))
+
+;; Support for temporarily highlighting current line.  The highlight is
+;; removed when the window configuration changes.
+(defun ack-temporarily-highlight-line ()
+  (unless (boundp 'ack-mode-overlay)
+    (set (make-local-variable 'ack-mode-overlay) nil))
+  (unless (overlayp ack-mode-overlay)
+    (setq ack-mode-overlay (make-overlay 0 0))
+    (overlay-put ack-mode-overlay 'face isearch-face))
+  (move-overlay ack-mode-overlay (line-beginning-position) (line-end-position))
+  (add-hook 'window-configuration-change-hook 'ack-remove-highlight nil 'local))
+
+(defun ack-remove-highlight ()
+  (when (and (boundp 'ack-mode-overlay)
+	     (overlayp ack-mode-overlay))
+    (delete-overlay ack-mode-overlay))
+  (remove-hook 'window-configuration-change-hook 'ack-remove-highlight 'local))
