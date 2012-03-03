@@ -44,11 +44,6 @@
   :require 'ack-mode
   :group 'ack-mode)
 
-(defun sj/project-root-dir ()
-  (let ((root-dir (project-root-fetch)))
-    (when root-dir
-      (cdar root-dir))))
-
 (defcustom ack-root-directory-function 'ack-default-directory
   "Function returning the directory to start the search in.
 
