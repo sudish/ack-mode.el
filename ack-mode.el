@@ -53,6 +53,12 @@ have ack begin its search at the root of your project."
   :require 'ack-mode
   :group 'ack-mode)
 
+(defcustom ack-header-line-face 'mode-line-buffer-id
+  "Face used for header lines in ack buffers."
+  :type '(face)
+  :require 'ack-mode
+  :group 'ack-mode)
+
 ;; shouldn't need to tweak these, but have at
 (defcustom ack-mode-file-regexp "^\\([^:[:blank:]][^:[:blank:]]+\\)$"
   "Regular expression matching the first line of a file results block."
@@ -112,6 +118,7 @@ Useful as value for `ack-root-directory-function'."
     (save-current-buffer
       (set-buffer buf)
       (ack-mode)
+      (setq header-line-format (ack-header dir))
       (hack-dir-local-variables-non-file-buffer)
       (setq default-directory dir)
 
@@ -236,3 +243,9 @@ buffer where the file group begins."
   (let ((location (cdr (ack-find-file-group 'previous))))
     (when location
       (goto-char location))))
+
+(defun ack-header (dir)
+  "Returns a string suitable for `header-line-format'."
+  (let* ((shortened (replace-regexp-in-string dir ".../" default-directory))
+	 (header (format "root: %s, pwd: %s, %%s" dir shortened)))
+    `(:propertize ,header face ,ack-header-line-face)))
