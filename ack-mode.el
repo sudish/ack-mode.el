@@ -78,20 +78,9 @@ have ack begin its search at the root of your project."
 
 ;; The buffer-locals in an ack-mode buffer
 (defvar ack-local-font-lock-keywords)
-(defvar ack-last-processed-mark)
-(defvar ack-in-group-p)
-(defvar ack-current-group-file-name)
-(defvar ack-current-group-start-marker)
-
-(defvar ack-use-text-properties nil)
 
 (define-derived-mode ack-mode special-mode "Ack"
-  "Major mode for ack search results."
-  ;; State tracking async input chunks
-  (set (make-local-variable 'ack-last-processed-mark) (point-min-marker))
-  (set (make-local-variable 'ack-in-group-p) nil)
-  (set (make-local-variable 'ack-current-group-file-name) nil)
-  (set (make-local-variable 'ack-current-group-start-marker) (make-marker)))
+  "Major mode for ack search results.")
 
 (define-key ack-mode-map [return]      'ack-visit-result)
 (define-key ack-mode-map [(shift tab)] 'ack-previous-file)
@@ -142,9 +131,7 @@ Useful as value for `ack-root-directory-function'."
 	(save-excursion
 	  (goto-char (process-mark proc))
 	  (insert string)
-	  (set-marker (process-mark proc) (point))
-	  (when ack-use-text-properties
-	    (ack-process-new-input)))))))
+	  (set-marker (process-mark proc) (point)))))))
 
 (defun ack-process-sentinel (proc event)
   (unless (process-live-p proc)
@@ -154,35 +141,7 @@ Useful as value for `ack-root-directory-function'."
 	(with-current-buffer buf
 	  (save-excursion
 	    (goto-char (point-max))
-	    (insert "\n")
-	    (when ack-use-text-properties
-	      (ack-process-new-input))))))))
-
-(defsubst ack-last-line-in-buffer-p ()
-  (save-excursion
-    ;; we're on the last line if
-    ;; - we can't move forward a line
-    ;; - moving forward leaves us at the end of the buffer
-    (or (/= 0 (forward-line))
-	(eobp))))
-
-(defun ack-process-new-input ()
-  (goto-char ack-last-processed-mark)
-  (while (not (ack-last-line-in-buffer-p))
-    (cond ((looking-at-p "^$")
-	   (setq ack-in-group-p nil)
-	   (when ack-current-group-file-name
-	     (put-text-property ack-current-group-start-marker (point)
-				'ack-file-name
-				(expand-file-name ack-current-group-file-name default-directory))
-	     (setq ack-current-group-file-name nil)))
-	  ((and (not ack-in-group-p)
-		(looking-at ack-mode-file-regexp))
-	   (setq ack-in-group-p t)
-	   (setq ack-current-group-file-name (substring-no-properties (match-string 1)))
-	   (set-marker ack-current-group-start-marker (point-marker))))
-    (forward-line))
-  (set-marker ack-last-processed-mark (point-marker)))
+	    (insert "\n")))))))
 
 (defun ack-visit-result ()
   "Visit file and line displayed on current line in search results buffer.
