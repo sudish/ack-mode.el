@@ -108,7 +108,7 @@ Useful as value for `ack-mode-root-directory-function'."
     (save-current-buffer
       (set-buffer buf)
       (ack-mode)
-      (setq header-line-format (ack-mode-header dir))
+      (setq header-line-format (ack-mode-header-line dir))
       (hack-dir-local-variables-non-file-buffer)
       (setq default-directory dir)
 
@@ -195,8 +195,8 @@ buffer where the file group begins."
     (when location
       (goto-char location))))
 
-(defun ack-mode-header (dir)
-  "Returns a string suitable for `header-line-format'."
+(defun ack-mode-header-line (dir)
+  "Returns a value suitable for `header-line-format'."
   (let* ((shortened (replace-regexp-in-string dir ".../" default-directory))
 	 (header (format "root: %s, pwd: %s, %%s" dir shortened)))
     `(:propertize ,header face ,ack-mode-header-line-face)))
