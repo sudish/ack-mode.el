@@ -7,7 +7,7 @@
 ;; Keywords: ack grep search
 ;; Created: 16 Oct 2011
 ;; Author: Sudish Joseph <sudish@gmail.com>
-;; Version: 1
+;; Version: 2
 
 ;; This file is NOT part of GNU Emacs.
 
