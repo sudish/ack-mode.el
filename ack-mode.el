@@ -253,17 +253,13 @@ buffer where the file group begins."
 
 ;; Support for temporarily highlighting current line.  The highlight is
 ;; removed when the window configuration changes.
+(defvar ack-mode-overlay (make-overlay 0 0))
+(overlay-put ack-mode-overlay 'face isearch-face)
+
 (defun ack-temporarily-highlight-line ()
-  (unless (boundp 'ack-mode-overlay)
-    (set (make-local-variable 'ack-mode-overlay) nil))
-  (unless (overlayp ack-mode-overlay)
-    (setq ack-mode-overlay (make-overlay 0 0))
-    (overlay-put ack-mode-overlay 'face isearch-face))
   (move-overlay ack-mode-overlay (line-beginning-position) (line-end-position))
   (add-hook 'window-configuration-change-hook 'ack-remove-highlight nil 'local))
 
 (defun ack-remove-highlight ()
-  (when (and (boundp 'ack-mode-overlay)
-	     (overlayp ack-mode-overlay))
-    (delete-overlay ack-mode-overlay))
+  (delete-overlay ack-mode-overlay)
   (remove-hook 'window-configuration-change-hook 'ack-remove-highlight 'local))
