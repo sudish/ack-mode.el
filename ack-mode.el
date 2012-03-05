@@ -211,8 +211,8 @@ The file is visited in a separate window with the current line centered."
       (with-current-buffer buf
 	(goto-char (point-min))
 	(forward-line (1- (or line 0)))
-	(ack-temporarily-highlight-line)
-	(recenter nil)))))
+	(recenter)
+	(ack-temporarily-highlight-line)))))
 
 (defun ack-find-file-group (which)
   "Returns (PATH . LOCATION) for the file group specified by `which'.
