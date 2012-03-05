@@ -119,8 +119,7 @@ Useful as value for `ack-root-directory-function'."
 
       (let ((proc (apply 'start-process (buffer-name buf) buf
 			 ack-program-name (append ack-arguments (list search-string)))))
-	(set-process-filter   proc 'ack-process-filter)
-	(set-process-sentinel proc 'ack-process-sentinel)))
+	(set-process-filter   proc 'ack-process-filter)))
     buf))
 
 (defun ack-process-filter (proc string)
@@ -132,16 +131,6 @@ Useful as value for `ack-root-directory-function'."
 	  (goto-char (process-mark proc))
 	  (insert string)
 	  (set-marker (process-mark proc) (point)))))))
-
-(defun ack-process-sentinel (proc event)
-  (unless (process-live-p proc)
-    (let ((buf (process-buffer proc))
-	  (inhibit-read-only t))
-      (when (buffer-live-p buf)
-	(with-current-buffer buf
-	  (save-excursion
-	    (goto-char (point-max))
-	    (insert "\n")))))))
 
 (defun ack-visit-result ()
   "Visit file and line displayed on current line in search results buffer.
