@@ -206,8 +206,8 @@ buffer where the file group begins."
 
 (defun ack-temporarily-highlight-line ()
   (move-overlay ack-mode-overlay (line-beginning-position) (line-end-position))
-  (add-hook 'window-configuration-change-hook 'ack-remove-highlight nil 'local))
+  (add-hook 'window-configuration-change-hook 'ack-remove-highlight))
 
 (defun ack-remove-highlight ()
   (delete-overlay ack-mode-overlay)
-  (remove-hook 'window-configuration-change-hook 'ack-remove-highlight 'local))
+  (remove-hook 'window-configuration-change-hook 'ack-remove-highlight))
